@@ -1,0 +1,7 @@
+AQT123 Istambul    17:45
+XYZ001 Nice        17:50
+MHT635 Munique     18:25
+FFF305 Estocolmo   18:35
+QRS111 Madri       18:45
+DEF321 Berlim      19:00
+GHI456 St.Petsbu.  19:15
