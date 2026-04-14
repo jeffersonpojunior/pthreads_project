@@ -1,5 +1,5 @@
 // Compilar: gcc -pthread q2.c -o q2
-// Executar: ./q2 <L> <T> <arquivo_inicial> <arq_atualizacao1> [arq_atualizacao2 ...]
+// Executar: ./q2 <L> <T> <arquivo_inicial> <arq_atualizacao_1> [arq_atualizacao_2 ...]
 
 #include <pthread.h>
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #define MAX_CONTEUDO 256
 #define MAX_ARQUIVOS 200
 
+/* ----------------------------------------------------------------------------------------- */
 // cores ANSI para o fundo de cada linha
 #define RESET "\033[0m"
 const char *CORES[] = {
@@ -23,15 +24,16 @@ const char *CORES[] = {
     "\033[47;30m" // branco
 };
 #define NUM_CORES 7
+/* ----------------------------------------------------------------------------------------- */
 
-int L;  // numero de linhas da tela
-int N;  // numero de arquivos de atualizacao
+int L;  // número de linhas da tela
+int N;  // número de arquivos de atualização
 char *arquivos[MAX_ARQUIVOS];
 
-// um mutex por linha (exclusao mutua refinada)
+// um mutex por linha (exclusão mútua)
 pthread_mutex_t mutex_linha[MAX_LINHAS];
 
-// mutex para pegar o proximo arquivo dinamicamente
+// mutex para pegar o próximo arquivo:
 pthread_mutex_t mutex_arquivo;
 int proximo = 0;
 
@@ -42,7 +44,7 @@ void desenhar_linha(int linha, const char *conteudo) {
     fflush(stdout);
 }
 
-void *rotina(void *arg) {
+void *rotina(void *arg) { // Código a ser executado pela thread
     int id = *(int *)arg;
 
     while (1) {
@@ -52,6 +54,7 @@ void *rotina(void *arg) {
             pthread_mutex_unlock(&mutex_arquivo);
             break;
         }
+
         int idx = proximo++;
         pthread_mutex_unlock(&mutex_arquivo);
 
@@ -64,17 +67,22 @@ void *rotina(void *arg) {
         int num_linha;
         char conteudo[MAX_CONTEUDO];
 
-        // cada iteracao le um par (numero da linha, novo conteudo)
+        // cada iteração lê um par (numero da linha, novo conteudo)
         while (fscanf(f, " %d ", &num_linha) == 1) {
-            if (!fgets(conteudo, sizeof(conteudo), f)) break;
+            if (!fgets(conteudo, sizeof(conteudo), f)) {
+                break;
+            }
             conteudo[strcspn(conteudo, "\n")] = '\0';
 
-            if (num_linha < 1 || num_linha > L) continue;
+            if (num_linha < 1 || num_linha > L) {
+                continue;
+            }
 
             // trava apenas o mutex da linha que vai ser modificada
             pthread_mutex_lock(&mutex_linha[num_linha - 1]);
             desenhar_linha(num_linha, conteudo);
-            sleep(2); // segura o mutex por 2s para a mudanca ficar visivel
+            
+            sleep(2); // segura o mutex por 2s para a mudança ficar visível
             pthread_mutex_unlock(&mutex_linha[num_linha - 1]);
         }
 
@@ -86,7 +94,7 @@ void *rotina(void *arg) {
 
 int main(int argc, char *argv[]) {
     if (argc < 4) {
-        printf("Uso: %s <L> <T> <arq_inicial> <arq_atualizacao1> ...\n", argv[0]);
+        printf("Uso: %s <L> <T> <arq_inicial> <arq_atualizacao_1> ...\n", argv[0]);
         return 1;
     }
 

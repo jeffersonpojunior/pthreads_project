@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int C;            // numero de cabines
+int C;            // número de cabines
 int *cabine_livre;
 int total_livres;
 
@@ -24,7 +24,7 @@ void *carro(void *arg) {
     if (total_livres == 0)
         printf("Carro %d aguardando cabine livre\n\n", id);
 
-    // while (nao if) para tratar wakeups esporios
+    // wakeups
     while (total_livres == 0)
         pthread_cond_wait(&cond, &mutex); // libera o mutex e dorme ate ser sinalizado
 
@@ -68,7 +68,9 @@ int main(int argc, char *argv[]) {
     int T = atoi(argv[2]);
 
     cabine_livre = malloc(C * sizeof(int));
-    for (int i = 0; i < C; i++) cabine_livre[i] = 1;
+    for (int i = 0; i < C; i++) {
+        cabine_livre[i] = 1;
+    }
     total_livres = C;
 
     pthread_t threads[T];
@@ -78,8 +80,9 @@ int main(int argc, char *argv[]) {
         pthread_create(&threads[i], NULL, carro, id);
     }
 
-    for (int i = 0; i < T; i++)
+    for (int i = 0; i < T; i++) {
         pthread_join(threads[i], NULL);
+    }
 
     free(cabine_livre);
     pthread_mutex_destroy(&mutex);

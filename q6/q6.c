@@ -10,7 +10,9 @@
 int *arr; // vetor global compartilhado pelas threads
 
 typedef struct {
-    int l, r, prof;
+    int l;
+    int r;
+    int prof;
 } Args;
 
 // declaracao antecipada (sort e sort_thread se chamam mutuamente)
@@ -21,10 +23,15 @@ void merge(int l, int m, int r) {
     int *tmp = malloc(n * sizeof(int));
 
     int i = l, j = m + 1, k = 0;
-    while (i <= m && j <= r)
+    while (i <= m && j <= r) {
         tmp[k++] = (arr[i] <= arr[j]) ? arr[i++] : arr[j++];
-    while (i <= m) tmp[k++] = arr[i++];
-    while (j <= r) tmp[k++] = arr[j++];
+    }
+    while (i <= m) {
+        tmp[k++] = arr[i++];
+    }
+    while (j <= r) {
+        tmp[k++] = arr[j++];
+    }
 
     memcpy(arr + l, tmp, n * sizeof(int));
     free(tmp);
@@ -32,12 +39,14 @@ void merge(int l, int m, int r) {
 
 void sort(int l, int r, int prof) {
     printf("Ordenando [%d, %d]\n", l, r);
-    if (l == r) return;
+    if (l == r) {
+        return;
+    }
 
     int m = (l + r) / 2;
 
     if (prof > 0) {
-        // cria uma thread para cada metade (intervalos disjuntos, sem conflito)
+        // cria uma thread para cada metade (intervalos disjuntos, por isso não há conflito)
         Args arg_esq = {l,     m, prof - 1};
         Args arg_dir = {m + 1, r, prof - 1};
 
@@ -48,7 +57,8 @@ void sort(int l, int r, int prof) {
         // so faz o merge depois que as duas metades terminarem
         pthread_join(t_esq, NULL);
         pthread_join(t_dir, NULL);
-    } else {
+    } 
+    else {
         // profundidade esgotada, continua sequencial
         sort(l,     m, 0);
         sort(m + 1, r, 0);
@@ -74,8 +84,9 @@ int main(int argc, char *argv[]) {
     int n = argc - 2;
 
     arr = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         arr[i] = atoi(argv[2 + i]);
+    }
 
     printf("Vetor inicial:  ");
     for (int i = 0; i < n; i++) printf("%d ", arr[i]);
@@ -84,7 +95,9 @@ int main(int argc, char *argv[]) {
     sort(0, n - 1, prof);
 
     printf("\nVetor ordenado: ");
-    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
     printf("\n");
 
     free(arr);

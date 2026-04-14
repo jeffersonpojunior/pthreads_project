@@ -84,16 +84,3 @@ int main(int argc, char *argv[]) {
     printf("Feito!\n");
     return 0;
 }
-
-/*
-
-O arquivo entrada.ppm pode ser alterado
-
-1.copie exatamente essa parte e rode no terminal:
-
-gcc Questao1.c -o conversor -lpthread
-./conversor
-cat saida.ppm
-
-
-*/

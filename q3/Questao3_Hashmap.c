@@ -144,6 +144,7 @@ int main() {
     pthread_t threads[2000]; // // Suporta até 2000 operações simultâneas
     int       t_count = 0;
     char      linha[100];
+
     // Operações do Arquivo
     while (fgets(linha, sizeof(linha), arquivo)) {
         struct thread_data* data = malloc(sizeof(struct thread_data));
@@ -174,6 +175,7 @@ int main() {
         pthread_join(threads[i], NULL);
 
     printf("\nTodas as operacoes concluidas.\n");
+
     // Destrói os mutexes 
     for (int i = 0; i < mp->capacity; i++)
         pthread_mutex_destroy(&mp->locks[i]);
@@ -184,17 +186,3 @@ int main() {
 
     return 0;
 }
-
-/*
-1. Preste atenção: 
-
-O Txt já tá pronto:
-Questao3_Entrada.txt
-
-
-2. Rode esse comando no terminal:
-
-gcc Questao3_Hashmap.c -o hashmap -lpthread
-./hashmap
-
-*/
